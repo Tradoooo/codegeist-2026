@@ -1,0 +1,32 @@
+name: ci
+
+on:
+  pull_request:
+    paths: [content/**, site/**, scripts/**, .github/workflows/ci.yml]
+  push:
+    branches: [main]
+    paths: [content/**, site/**, scripts/**, .github/workflows/ci.yml]
+  workflow_dispatch:
+
+# Budget CI : 5 minutes maximum par job, une seule exécution à la fois.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  garde-fous:
+    name: Garde-fous et construction
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Garde-fous (fuites, taille, corpus, liens) + construction
+        run: node scripts/check.mjs
