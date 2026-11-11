@@ -1,0 +1,16 @@
+{
+  "name": "codegeist-2026",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Site statique des concepts Forge rédigés pour Codegeist 2026 (Atlassian)",
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "check": "node scripts/check.mjs",
+    "serve": "node scripts/serve.mjs",
+    "test": "node scripts/check.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
