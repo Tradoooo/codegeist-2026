@@ -51,7 +51,8 @@ function checkCodeSize() {
 
 function checkCorpus() {
   const data = JSON.parse(readFileSync(join(DIST, 'idees.json'), 'utf8'));
-  if (data.ideas.length < 500) fail(`corpus : ${data.ideas.length} idées indexées, 500 attendues`);
+  const expected = 2600;
+  if (data.ideas.length !== expected) fail(`corpus : ${data.ideas.length} idées indexées, ${expected} attendues`);
   const duplicates = new Map();
   for (const idea of data.ideas) {
     const key = idea.nom.toLowerCase();

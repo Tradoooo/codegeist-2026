@@ -67,45 +67,52 @@ function conceptCards(metas) {
 }
 
 function buildIndex(shell, metas, ideas) {
+  const passes = new Set(ideas.map((i) => i.passe)).size;
   const stats = `<dl class="stats">
     <div><dt>Idées générées</dt><dd>${ideas.length}</dd></div>
+    <div><dt>Passes</dt><dd>${passes}</dd></div>
     <div><dt>Tranches explorées</dt><dd>${new Set(ideas.map((i) => i.tranche)).size}</dd></div>
     <div><dt>Cahiers des charges</dt><dd>${metas.length}</dd></div>
-    <div><dt>Finalistes</dt><dd>10</dd></div>
   </dl>`;
   const body = `<section class="hero">
     <p class="eyebrow">Codegeist 2026 · Atlassian Forge · soumission avant le 22 décembre 2026</p>
     <h1>Cinq concepts d'applications Forge, poussés jusqu'au cahier des charges</h1>
-    <p class="lede">Un corpus de ${ideas.length} idées générées sur onze tranches (Jira, JSM, Confluence, Bitbucket,
-    Compass, Rovo, Teamwork Graph, MCP, métier, industries, transversal), filtré contre les projets déjà construits,
-    puis réduit à dix finalistes — dont cinq sont documentés ici en détail.</p>
+    <p class="lede">Un corpus de ${ideas.length} idées générées en quatre passes — d'abord onze tranches par produit
+    (Jira, JSM, Confluence, Bitbucket, Compass, Rovo, Teamwork Graph, MCP, métier, industries, transversal), puis cent
+    idées sur des axes non couverts, puis deux mille de plus par front inter-produits et par mécanisme — filtré contre
+    les projets déjà construits, puis réduit à dix finalistes, dont cinq sont documentés ici en détail.</p>
     <p class="cta"><a class="btn" href="/top-10.html">Voir le top 10</a>
+    <a class="btn ghost" href="/classements.html">Tous les classements</a>
     <a class="btn ghost" href="/idees.html">Parcourir les ${ideas.length} idées</a></p>
     ${stats}
   </section>
   <section class="concepts"><h2>Les cinq concepts documentés</h2><div class="grid">${conceptCards(metas)}</div></section>`;
   return pageShell(shell, {
     title: 'Codegeist 2026 — concepts Forge',
-    description: 'Cinq concepts d\'applications Atlassian Forge issus d\'un corpus de 500 idées, avec cahier des charges complet.',
+    description: 'Cinq concepts d\'applications Atlassian Forge issus d\'un corpus de 2 600 idées, avec cahier des charges complet.',
     body,
     active: 'home',
   });
 }
 
-function buildIdeasPage(shell, ideas, tranches) {
-  const options = (values, label) => values
+function buildIdeasPage(shell, ideas) {
+  const options = (values) => values
     .map((v) => `<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`).join('');
-  const trancheOptions = options(tranches.map((t) => t.label), 'tranche');
+  const passes = ['1', '2', '3', '4']
+    .map((p) => ({ value: p, count: ideas.filter((i) => i.passe === p).length }))
+    .filter((p) => p.count > 0)
+    .map((p) => `<option value="${p.value}">Passe ${p.value} — ${p.count} idées</option>`)
+    .join('');
   const categories = [...new Set(ideas.map((i) => i.categorie).filter(Boolean))].sort();
   const bonuses = [...new Set(ideas.map((i) => i.bonus).filter(Boolean))].sort();
   const body = `<section class="hero slim">
     <h1>${ideas.length} idées, filtrables</h1>
     <p class="lede">Chaque idée est une ligne : nom, pitch, produit et modules Forge, bonus visés, catégorie.
-    Aucun doublon avec les projets déjà construits.</p>
+    Quatre passes (500, 100, 1 000, 1 000) et aucun doublon avec les projets déjà construits.</p>
   </section>
   <section class="filters" id="filters">
     <label>Recherche<input type="search" id="q" placeholder="mot-clé, nom de produit…"></label>
-    <label>Tranche<select id="tranche"><option value="">Toutes</option>${trancheOptions}</select></label>
+    <label>Passe<select id="passe"><option value="">Toutes</option>${passes}</select></label>
     <label>Catégorie<select id="categorie"><option value="">Toutes</option>${options(categories)}</select></label>
     <label>Bonus<select id="bonus"><option value="">Tous</option>${options(bonuses)}</select></label>
     <p class="count" id="count" aria-live="polite"></p>
@@ -113,7 +120,7 @@ function buildIdeasPage(shell, ideas, tranches) {
   <section id="results" class="results" aria-live="polite"></section>`;
   const page = pageShell(shell, {
     title: `${ideas.length} idées — Codegeist 2026`,
-    description: 'Corpus complet des idées d\'applications Forge générées pour Codegeist 2026, filtrable par tranche, catégorie et bonus.',
+    description: 'Corpus complet des idées d\'applications Forge générées pour Codegeist 2026, filtrable par passe, catégorie et bonus.',
     body,
     active: 'idees',
   });
@@ -127,8 +134,8 @@ function collectIdeas() {
   const tranches = [];
   for (const file of files) {
     const source = read(join(dir, file));
-    const code = file.replace(/\.md$/, '');
-    const label = trancheLabel(source, file);
+    const code = (/^[A-Z]+\d+/i.exec(file) || [file.replace(/\.md$/, '')])[0];
+    const label = trancheLabel(source);
     const parsed = parseIdeas(source, code);
     tranches.push({ code, label, count: parsed.length });
     ideas.push(...parsed);
@@ -162,11 +169,16 @@ function build() {
   const { ideas, tranches } = collectIdeas();
   write(join(DIST, 'idees.json'), JSON.stringify({ generatedAt: new Date().toISOString(), tranches, ideas }, null, 1));
   write(join(DIST, 'index.html'), buildIndex(shell, metas, ideas));
-  write(join(DIST, 'idees.html'), buildIdeasPage(shell, ideas, tranches));
+  write(join(DIST, 'idees.html'), buildIdeasPage(shell, ideas));
   write(join(DIST, 'top-10.html'), renderMarkdownPage(shell, read(join(CONTENT, 'top-10.md')), {
     title: 'Top 10 — Codegeist 2026',
-    description: 'Les dix idées retenues sur 500, avec leur note et leur justification.',
+    description: 'Les dix idées retenues sur les 500 de la première passe, avec leur note et leur justification.',
     active: 'top10',
+  }));
+  write(join(DIST, 'classements.html'), renderMarkdownPage(shell, read(join(CONTENT, 'classements.md')), {
+    title: 'Classements — Codegeist 2026',
+    description: 'Les classements des quatre passes : top 10 de chacune, et les deux idées notées 22/22.',
+    active: 'classements',
   }));
   write(join(DIST, 'methode.html'), renderMarkdownPage(shell, read(join(CONTENT, 'methode.md')), {
     title: 'Méthode — Codegeist 2026',

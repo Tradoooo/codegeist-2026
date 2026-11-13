@@ -4,6 +4,14 @@
 const LINE = /^\s*(\d+)\.\s+\*\*(.+?)\*\*\s*[—–-]\s*(.+)$/;
 const BRACKET = /\[([^\]]+)\]/g;
 
+// Préfixe de tranche → numéro de passe (S=1, N=2, T=3, U=4).
+const PASSES = { S: '1', N: '2', T: '3', U: '4' };
+
+/** Numéro de passe (1→4) dérivé du préfixe du code de tranche. */
+export function passOf(tranche) {
+  return PASSES[String(tranche).charAt(0).toUpperCase()] || '';
+}
+
 function pickBonus(brackets) {
   const found = brackets.find((b) => /^[AMTP\s/+·,-]+$/i.test(b.trim()) && /[AMTP]/i.test(b));
   if (!found) return '';
@@ -30,6 +38,7 @@ function splitTail(tail) {
 /** Transforme le texte d'une tranche en liste d'idées structurées. */
 export function parseIdeas(source, tranche) {
   const ideas = [];
+  const passe = passOf(tranche);
   for (const line of source.split('\n')) {
     const match = LINE.exec(line);
     if (!match) continue;
@@ -42,14 +51,16 @@ export function parseIdeas(source, tranche) {
       bonus: pickBonus(brackets),
       categorie: pickCategory(brackets),
       tranche,
+      passe,
     });
   }
   return ideas;
 }
 
-/** Titre lisible d'une tranche, tiré de la première ligne `# Sxx — ...`. */
-export function trancheLabel(source, file) {
+/** Titre lisible d'une tranche, tiré de sa première ligne `# …`. */
+export function trancheLabel(source) {
   const heading = /^#\s+(.+)$/m.exec(source);
-  if (heading) return heading[1].replace(/^S\d+\s*[-—–]\s*/, '').replace(/\s*\(\d+\)\s*$/, '');
-  return file.replace(/^S\d+-/, '').replace(/\.md$/, '');
+  return (heading ? heading[1] : '')
+    .replace(/^[A-Z]\d+(\s*[-—––]\s*|\s+)\s*/, '')
+    .replace(/\s*\(\d+\)\s*$/, '');
 }

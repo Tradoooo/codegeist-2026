@@ -1,19 +1,19 @@
-// Page « 500 idées » : chargement de l'index, filtrage et rendu paginé côté client.
+// Page « 2 600 idées » : chargement de l'index, filtrage et rendu paginé côté client.
 
 const PAGE_SIZE = 60;
 
-const state = { q: '', tranche: '', categorie: '', bonus: '', shown: PAGE_SIZE, ideas: [] };
+const state = { q: '', passe: '', categorie: '', bonus: '', shown: PAGE_SIZE, ideas: [] };
 
 const els = {};
 
 function cacheEls() {
-  for (const id of ['q', 'tranche', 'categorie', 'bonus', 'count', 'results']) {
+  for (const id of ['q', 'passe', 'categorie', 'bonus', 'count', 'results']) {
     els[id] = document.getElementById(id);
   }
 }
 
 function matches(idea) {
-  if (state.tranche && idea.tranche !== state.tranche) return false;
+  if (state.passe && idea.passe !== state.passe) return false;
   if (state.categorie && idea.categorie !== state.categorie) return false;
   if (state.bonus && idea.bonus !== state.bonus) return false;
   if (!state.q) return true;
@@ -23,7 +23,7 @@ function matches(idea) {
 
 function ideaCard(idea) {
   const tags = [
-    idea.tranche ? `<span class="tag">${idea.tranche}</span>` : '',
+    idea.passe ? `<span class="tag passe">Passe ${idea.passe}</span>` : '',
     idea.categorie ? `<span class="tag">${idea.categorie}</span>` : '',
     idea.bonus ? `<span class="tag bonus">bonus ${idea.bonus}</span>` : '',
     idea.produit ? `<span class="tag">${idea.produit}</span>` : '',
@@ -56,7 +56,7 @@ function render() {
 function bindFilters() {
   const onInput = () => { state.q = els.q.value; state.shown = PAGE_SIZE; render(); };
   els.q.addEventListener('input', onInput);
-  for (const key of ['tranche', 'categorie', 'bonus']) {
+  for (const key of ['passe', 'categorie', 'bonus']) {
     els[key].addEventListener('change', () => {
       state[key] = els[key].value;
       state.shown = PAGE_SIZE;
