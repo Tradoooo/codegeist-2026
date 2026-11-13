@@ -1,8 +1,10 @@
-# Codegeist 2026 — 500 idées générées, top 10 retenu
+# Codegeist 2026 — première passe, 500 idées, top 10 retenu
 
-> Généré le 11 novembre 2026 · corpus de 500 idées réparties en 11 tranches
+> Généré le 11 novembre 2026 · corpus de 500 idées réparties en 11 tranches (S01–S11)
 > Grille de note /22 : Impact /5 · Innovation /5 · Faisabilité au 22 déc. /5 · Bonus empilables /4 · Non-chevauchement avec l'existant /3
 > Existant écarté : 11 apps Forge déjà construites + 3 cahiers rédigés (`placard-wiki`, `vigie`, `gammes`) + 19 idées déjà proposées
+
+Cette page couvre la **première** passe seulement. Les trois passes suivantes (2 100 idées de plus) ont leurs propres classements, et le résultat de la quête du 22/22 sur les 2 600 idées, sur la page [Classements](/classements.html).
 
 ## Répartition du corpus
 

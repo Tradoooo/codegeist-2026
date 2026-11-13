@@ -5,7 +5,7 @@
 import { readFileSync, writeFileSync, mkdirSync, readdirSync, rmSync, existsSync } from 'node:fs';
 import { join, basename } from 'node:path';
 import { renderDocument, slugify, escapeHtml } from './lib/markdown.mjs';
-import { parseIdeas, trancheLabel } from './lib/ideas.mjs';
+import { parseCorpusFile } from './lib/ideas.mjs';
 
 const ROOT = process.cwd();
 const CONTENT = join(ROOT, 'content');
@@ -66,12 +66,12 @@ function conceptCards(metas) {
     .join('\n');
 }
 
-function buildIndex(shell, metas, ideas) {
+function buildIndex(shell, metas, ideas, axes) {
   const passes = new Set(ideas.map((i) => i.passe)).size;
   const stats = `<dl class="stats">
     <div><dt>Idées générées</dt><dd>${ideas.length}</dd></div>
     <div><dt>Passes</dt><dd>${passes}</dd></div>
-    <div><dt>Tranches explorées</dt><dd>${new Set(ideas.map((i) => i.tranche)).size}</dd></div>
+    <div><dt>Axes explorés</dt><dd>${axes.length}</dd></div>
     <div><dt>Cahiers des charges</dt><dd>${metas.length}</dd></div>
   </dl>`;
   const body = `<section class="hero">
@@ -131,24 +131,19 @@ function collectIdeas() {
   const dir = join(CONTENT, 'idees');
   const files = readdirSync(dir).filter((f) => f.endsWith('.md')).sort();
   const ideas = [];
-  const tranches = [];
+  const axes = [];
   for (const file of files) {
     const source = read(join(dir, file));
     const code = (/^[A-Z]+\d+/i.exec(file) || [file.replace(/\.md$/, '')])[0];
-    const label = trancheLabel(source);
-    const parsed = parseIdeas(source, code);
-    tranches.push({ code, label, count: parsed.length });
-    ideas.push(...parsed);
+    const parsed = parseCorpusFile(source, code);
+    axes.push(...parsed.axes);
+    ideas.push(...parsed.ideas);
   }
-  return { ideas, tranches };
+  return { ideas, axes };
 }
 
-function build() {
-  if (existsSync(DIST)) rmSync(DIST, { recursive: true, force: true });
-  mkdirSync(join(DIST, 'assets'), { recursive: true });
-  const shell = read(join(SITE, 'shell.html'));
-
-  const metas = CONCEPT_ORDER.map((slug) => {
+function buildConceptPages(shell) {
+  return CONCEPT_ORDER.map((slug) => {
     const source = read(join(CONTENT, 'concepts', `${slug}.md`));
     const meta = conceptMeta(source, slug);
     const body = source.split('\n').filter((l, i) => !(i < 12 && (l.startsWith('# ') || l.startsWith('> ') || !l.trim()))).join('\n');
@@ -165,10 +160,11 @@ function build() {
     }));
     return meta;
   });
+}
 
-  const { ideas, tranches } = collectIdeas();
-  write(join(DIST, 'idees.json'), JSON.stringify({ generatedAt: new Date().toISOString(), tranches, ideas }, null, 1));
-  write(join(DIST, 'index.html'), buildIndex(shell, metas, ideas));
+function buildCorpusPages(shell, ideas, axes) {
+  write(join(DIST, 'idees.json'), JSON.stringify({ generatedAt: new Date().toISOString(), axes, ideas }, null, 1));
+  write(join(DIST, 'index.html'), buildIndex(shell, buildConceptPages(shell), ideas, axes));
   write(join(DIST, 'idees.html'), buildIdeasPage(shell, ideas));
   write(join(DIST, 'top-10.html'), renderMarkdownPage(shell, read(join(CONTENT, 'top-10.md')), {
     title: 'Top 10 — Codegeist 2026',
@@ -177,21 +173,29 @@ function build() {
   }));
   write(join(DIST, 'classements.html'), renderMarkdownPage(shell, read(join(CONTENT, 'classements.md')), {
     title: 'Classements — Codegeist 2026',
-    description: 'Les classements des quatre passes : top 10 de chacune, et les deux idées notées 22/22.',
+    description: 'Les classements des trois passes suivantes, et les deux idées notées 22/22 sur les 2 600.',
     active: 'classements',
   }));
   write(join(DIST, 'methode.html'), renderMarkdownPage(shell, read(join(CONTENT, 'methode.md')), {
     title: 'Méthode — Codegeist 2026',
-    description: 'Comment le corpus de 500 idées a été produit, filtré et noté.',
+    description: 'Comment le corpus de 2 600 idées a été produit, filtré et noté, en quatre passes.',
     active: 'methode',
   }));
+}
+
+function build() {
+  if (existsSync(DIST)) rmSync(DIST, { recursive: true, force: true });
+  mkdirSync(join(DIST, 'assets'), { recursive: true });
+  const shell = read(join(SITE, 'shell.html'));
+  const { ideas, axes } = collectIdeas();
+  buildConceptPages(shell);
+  buildCorpusPages(shell, ideas, axes);
   write(join(DIST, 'assets', 'style.css'), read(join(SITE, 'style.css')));
   write(join(DIST, 'assets', 'app.js'), read(join(SITE, 'app.js')));
   write(join(DIST, 'assets', 'ideas.js'), read(join(SITE, 'ideas.js')));
-  write(join(DIST, 'CNAME'), '');
-  rmSync(join(DIST, 'CNAME'));
+  rmSync(join(DIST, 'CNAME'), { force: true });
   const pages = readdirSync(DIST, { recursive: true }).filter((f) => String(f).endsWith('.html'));
-  console.log(`dist/ construit : ${pages.length} pages HTML, ${ideas.length} idées indexées`);
+  console.log(`dist/ construit : ${pages.length} pages HTML, ${ideas.length} idées indexées, ${axes.length} axes`);
 }
 
 build();

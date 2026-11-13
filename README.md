@@ -9,7 +9,7 @@ Site statique des concepts d'applications [Atlassian Forge](https://developer.at
 - **Cinq cahiers des charges complets** — Trame, Banc, Gammes, Vigie, Placard du wiki. Chacun pousse un concept jusqu'au bout : vocabulaire, mécanique, exigences fonctionnelles numérotées, outils MCP exposés, agent Rovo, écrans, architecture Forge, modèle de données SQL, contraintes vérifiées dans la documentation, exigences non fonctionnelles, cas limites, recette, scénario de la vidéo de démonstration, plan jusqu'à la date de soumission, risques, vision à long terme.
 - **Un corpus de 2 600 idées** en quatre passes (500 + 100 + 1 000 + 1 000), filtrable par passe, catégorie et bonus visés. Aucun doublon de nom, vérifié par script.
 - **Les classements** : le top 10 de chaque passe, et les deux idées qui maximisent la grille de notation (22/22).
-- **La méthode** : comment le corpus a été produit, comment l'existant a été cartographié pour éviter les doublons, et quelles contraintes techniques ont été vérifiées avant d'écrire.
+- **La méthode** : comment le corpus a été produit en quatre passes, comment l'existant a été cartographié pour éviter les doublons, et quelles contraintes techniques ont été vérifiées avant d'écrire.
 
 ## Deux règles qui traversent tous les concepts
 
@@ -33,7 +33,7 @@ Le rendu Markdown est maison (`scripts/lib/markdown.mjs`) : titres, paragraphes,
 ```
 content/
   concepts/    les cinq cahiers des charges (source Markdown)
-  idees/       les 93 tranches du corpus (2 600 idées, quatre passes)
+  idees/       les 101 axes du corpus (2 600 idées, quatre passes)
   top-10.md    les finalistes de la première passe et leur note
   classements.md  les classements des passes 2, 3 et 4, puis le résultat du 22/22
   methode.md   la méthode de génération et de sélection

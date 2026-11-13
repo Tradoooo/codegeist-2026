@@ -1,3 +1,5 @@
+# T05 — Jira : données, champs, indicateurs (25)
+
 1. **Défriche** — Repère les champs personnalisés jamais remplis depuis 90 jours, chiffre leur poids et propose un plan de suppression sans casse. [Jira · `scheduledTrigger`, `jira:globalPage`, `sql`] [P] [Software]
 2. **Répertoire** — Détecte les champs homonymes de types différents et les mêmes sens sous deux noms, puis propose la table de correspondance à fusionner. [Jira · `jira:globalPage`, `scheduledTrigger`, `sql`, `llm`] [T/P] [Business]
 3. **Écran vide** — Compare écrans, schémas de champs et projets pour exposer les champs affichés jamais écrits et les champs écrits jamais affichés. [Jira · `jira:globalPage`, `scheduledTrigger`, `sql`] [P] [Software]

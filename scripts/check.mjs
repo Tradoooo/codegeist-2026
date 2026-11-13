@@ -49,8 +49,7 @@ function checkCodeSize() {
   }
 }
 
-function checkCorpus() {
-  const data = JSON.parse(readFileSync(join(DIST, 'idees.json'), 'utf8'));
+function checkCorpus(data) {
   const expected = 2600;
   if (data.ideas.length !== expected) fail(`corpus : ${data.ideas.length} idées indexées, ${expected} attendues`);
   const duplicates = new Map();
@@ -63,6 +62,25 @@ function checkCorpus() {
   }
   const sansBonus = data.ideas.filter((i) => !i.bonus).length;
   if (sansBonus > data.ideas.length * 0.5) warnings.push(`${sansBonus} idées sans bonus identifié`);
+}
+
+/** Chaque idée doit appartenir à un axe déclaré, et chaque axe à un compte exact. */
+function checkAxes(data) {
+  const axes = data.axes || [];
+  const expected = 101;
+  if (axes.length !== expected) fail(`axes : ${axes.length} déclarés, ${expected} attendus`);
+  const counts = new Map();
+  for (const idea of data.ideas) {
+    counts.set(idea.tranche, (counts.get(idea.tranche) || 0) + 1);
+  }
+  for (const axis of axes) {
+    if (!axis.label) fail(`axe ${axis.code} : libellé vide`);
+    const indexed = counts.get(axis.code) || 0;
+    if (indexed !== axis.count) fail(`axe ${axis.code} : ${axis.count} idées annoncées, ${indexed} indexées`);
+  }
+  for (const code of counts.keys()) {
+    if (!axes.some((axis) => axis.code === code)) fail(`axe ${code} : idées indexées sans axe déclaré`);
+  }
 }
 
 function checkLinks() {
@@ -90,7 +108,9 @@ function checkAssets() {
 execSync('node scripts/build.mjs', { stdio: 'inherit' });
 checkLeaks();
 checkCodeSize();
-checkCorpus();
+const corpus = JSON.parse(readFileSync(join(DIST, 'idees.json'), 'utf8'));
+checkCorpus(corpus);
+checkAxes(corpus);
 checkAssets();
 checkLinks();
 

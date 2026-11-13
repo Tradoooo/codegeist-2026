@@ -1,3 +1,5 @@
+# S02 — Jira : qualité, tests, conformité du flux, dette de processus (50)
+
 1. **Régressoscope** — Détecte quand un bug fermé réapparaît : relie au commit fautif via le graphe, alerte l'équipe avant propagation. [Jira+Bitbucket · scheduledTrigger+rovo:action] [T] [Software]
 2. **FluxConforme** — Vérifie que les transitions de workflow respectent les étapes obligatoires ; détecte les sauts via automation et signale les écarts de conformité. [Jira · consumer+rovo:agent] [A] [Software]
 3. **DetteMigratoire** — Scanne les projets avant migration : champs personnalisés orphelins, schemes de workflow inutilisés, permissions héritées ; génère un plan de nettoyage priorisé. [Jira · rovo:action+function] [T] [Software]
