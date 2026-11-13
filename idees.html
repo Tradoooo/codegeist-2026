@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>2600 idées — Codegeist 2026</title>
+<meta name="description" content="Corpus complet des idées d'applications Forge générées pour Codegeist 2026, filtrable par passe, catégorie et bonus.">
+<meta property="og:title" content="2600 idées — Codegeist 2026">
+<meta property="og:description" content="Corpus complet des idées d'applications Forge générées pour Codegeist 2026, filtrable par passe, catégorie et bonus.">
+<meta property="og:type" content="article">
+<link rel="stylesheet" href="/assets/style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>🧵</text></svg>">
+</head>
+<body data-active="idees">
+<a class="skip" href="#main">Aller au contenu</a>
+<header class="top">
+  <a class="brand" href="/">Codegeist&nbsp;2026 <span>concepts Forge</span></a>
+  <nav aria-label="Navigation principale">
+    <a href="/" data-nav="home">Accueil</a>
+    <a href="/top-10.html" data-nav="top10">Top 10</a>
+    <a href="/classements.html" data-nav="classements">Classements</a>
+    <a href="/idees.html" data-nav="idees">2 600 idées</a>
+    <a href="/methode.html" data-nav="methode">Méthode</a>
+  </nav>
+  <button id="theme" type="button" aria-label="Basculer le thème">◐</button>
+</header>
+<div class="layout">
+  <main id="main"><section class="hero slim">
+    <h1>2600 idées, filtrables</h1>
+    <p class="lede">Chaque idée est une ligne : nom, pitch, produit et modules Forge, bonus visés, catégorie.
+    Quatre passes (500, 100, 1 000, 1 000) et aucun doublon avec les projets déjà construits.</p>
+  </section>
+  <section class="filters" id="filters">
+    <label>Recherche<input type="search" id="q" placeholder="mot-clé, nom de produit…"></label>
+    <label>Passe<select id="passe"><option value="">Toutes</option><option value="1">Passe 1 — 500 idées</option><option value="2">Passe 2 — 100 idées</option><option value="3">Passe 3 — 1000 idées</option><option value="4">Passe 4 — 1000 idées</option></select></label>
+    <label>Catégorie<select id="categorie"><option value="">Toutes</option><option value="Business Teams">Business Teams</option><option value="Software Teams">Software Teams</option><option value="Specialized Industries">Specialized Industries</option></select></label>
+    <label>Bonus<select id="bonus"><option value="">Tous</option><option value="A">A</option><option value="A+M">A+M</option><option value="A+M+P">A+M+P</option><option value="A+M+P+T">A+M+P+T</option><option value="A+M+T">A+M+T</option><option value="A+P">A+P</option><option value="A+P+T">A+P+T</option><option value="A+T">A+T</option><option value="M">M</option><option value="M+P">M+P</option><option value="M+P+T">M+P+T</option><option value="M+T">M+T</option><option value="P">P</option><option value="P+T">P+T</option><option value="T">T</option></select></label>
+    <p class="count" id="count" aria-live="polite"></p>
+  </section>
+  <section id="results" class="results" aria-live="polite"></section></main>
+  <aside class="side"></aside>
+</div>
+<footer class="foot">
+  <p>Concepts rédigés pour <a href="https://codegeist2026.devpost.com/" rel="noopener noreferrer">Codegeist 2026</a>
+  (Atlassian) · aucun de ces projets n'est affilié à Atlassian · 2026</p>
+  <p><a href="https://github.com/Tradoooo/codegeist-2026" rel="noopener noreferrer">Code source du site</a></p>
+</footer>
+<script src="/assets/app.js" defer></script>
+<script type="module" src="/assets/ideas.js"></script></body>
+</html>
